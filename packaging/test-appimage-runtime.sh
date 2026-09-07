@@ -2,6 +2,7 @@
 set -eu
 
 APPIMAGE=${1:?usage: test-appimage-runtime.sh PATH_TO_APPIMAGE}
+APPIMAGE=$(CDPATH= cd -- "$(dirname -- "$APPIMAGE")" && pwd)/$(basename -- "$APPIMAGE")
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 EXTRACT_DIR=$(mktemp -d "${TMPDIR:-/tmp}/mistria-presence-smoke.XXXXXX")
 trap 'rm -rf "$EXTRACT_DIR"' EXIT
