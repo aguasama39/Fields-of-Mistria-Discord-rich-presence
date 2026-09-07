@@ -77,6 +77,77 @@ cp data/io.github.mistriapresence.App.desktop ~/.local/share/applications/
 
 Distribution packages should place the executable on `PATH`, the desktop file in `/usr/share/applications/`, the metainfo file in `/usr/share/metainfo/`, and the service template in `/usr/lib/systemd/user/`. No Windows or macOS packaging is provided.
 
+## AppImage
+
+The repository includes a self-contained x86_64 AppImage build. It uses the
+system GTK/libadwaita development files only while building, bundles the
+Python interpreter, PyGObject, GTK libraries, typelibs, application launcher,
+desktop file, metainfo, and icon, and downloads its build tools into the
+repository cache rather than installing them system-wide.
+
+### Build prerequisites
+
+On Debian/Ubuntu, install the build prerequisites once:
+
+```sh
+sudo apt install gcc curl pkg-config python3 python3-gi \
+  gir1.2-gtk-4.0 gir1.2-adw-1 libgtk-4-dev libadwaita-1-dev
+```
+
+The builder currently targets x86_64 Linux. `linuxdeploy` and `appimagetool`
+are pinned/downloaded by the script; set `APPIMAGE_CACHE_DIR` to reuse a
+cache outside the checkout if desired.
+
+### Build and run
+
+```sh
+./packaging/build-appimage.sh
+./dist/mistria-presence-0.1.0-x86_64.AppImage
+```
+
+The versioned file is written to `dist/`, which is ignored by Git. It can be
+moved anywhere and does not need installation or execute permissions beyond
+the executable bit created by the build. The AppImage still needs a graphical
+Linux session, a running Discord desktop client, and Steam for automatic game
+detection.
+
+### Desktop integration
+
+AppImages do not register applications automatically. AppImageLauncher or
+`appimaged` can integrate the desktop file when the AppImage is placed in a
+watched applications directory. For a manual per-user install, extract the
+metadata and copy it into the standard XDG locations:
+
+```sh
+./dist/mistria-presence-0.1.0-x86_64.AppImage --appimage-extract
+mkdir -p ~/.local/share/applications ~/.local/share/metainfo ~/.local/share/icons/hicolor/scalable/apps
+cp squashfs-root/usr/share/applications/io.github.mistriapresence.App.desktop ~/.local/share/applications/
+cp squashfs-root/usr/share/metainfo/io.github.mistriapresence.App.metainfo.xml ~/.local/share/metainfo/
+cp squashfs-root/usr/share/icons/hicolor/scalable/apps/io.github.mistriapresence.App.svg ~/.local/share/icons/hicolor/scalable/apps/
+mkdir -p ~/.local/bin
+ln -sf "$(realpath ./dist/mistria-presence-0.1.0-x86_64.AppImage)" ~/.local/bin/mistria-presence
+rm -rf squashfs-root
+```
+
+Ensure `~/.local/bin` is on `PATH` for the desktop shell. The symlink makes
+the extracted desktop entry's `Exec=mistria-presence` resolve to the AppImage;
+AppImageLauncher and `appimaged` handle this integration automatically.
+
+The AppImage does not install the systemd user service automatically. Login
+autostart can be configured by creating a user unit whose `ExecStart` points
+to the absolute path of the AppImage. The bundled service template remains
+available for normal source/package installations.
+
+### Known limitations
+
+- Builds are currently x86_64-only and should be built on a Linux distribution
+  no newer than the oldest distribution intended to run the AppImage.
+- GTK and libadwaita are bundled, but graphics drivers, a desktop session,
+  Discord IPC, Steam, and the game remain host-provided dependencies.
+- A system with FUSE unavailable can usually run the file with
+  `APPIMAGE_EXTRACT_AND_RUN=1`; desktop integration tools may still require
+  normal AppImage mounting support.
+
 ## Troubleshooting
 
 - **Discord disconnected:** start the official Discord Linux client. Flatpak Discord may expose IPC differently; verify `XDG_RUNTIME_DIR` and the `discord-ipc-*` sockets.
