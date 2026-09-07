@@ -20,7 +20,7 @@ jobs:
             gir1.2-gtk-4.0 gir1.2-adw-1 libgtk-4-dev libadwaita-1-dev \
             python3-pip
       - name: Run tests
-        run: python3 -m pip install --user 'pytest>=8' && pytest
+        run: python3 -m pip install --user 'pytest>=8' && PYTHONPATH=src pytest
       - name: Build AppImage
         run: ./packaging/build-appimage.sh
       - name: Upload AppImage
