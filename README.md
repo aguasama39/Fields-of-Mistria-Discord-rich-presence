@@ -4,7 +4,7 @@ Linux-only Discord Rich Presence for the Steam release of **Fields of Mistria**.
 
 ## Prerequisites
 
-- Linux with Python 3.11 or newer
+- Linux with Python 3.10 or newer
 - GTK 4 and libadwaita 1 introspection bindings
 - A running Discord desktop client for live presence
 - Steam and the Linux version of Fields of Mistria for automatic detection
@@ -81,9 +81,10 @@ Distribution packages should place the executable on `PATH`, the desktop file in
 
 The repository includes a self-contained x86_64 AppImage build. It uses the
 system GTK/libadwaita development files only while building, bundles the
-Python interpreter, PyGObject, GTK libraries, typelibs, application launcher,
-desktop file, metainfo, and icon, and downloads its build tools into the
-repository cache rather than installing them system-wide.
+Ubuntu 22.04 Python 3.10 interpreter and matching PyGObject bindings, GTK
+libraries, typelibs, application launcher, existing desktop metadata, and
+icon, and downloads its build tools into the repository cache rather than
+installing them system-wide.
 
 ### Build prerequisites
 
@@ -138,10 +139,12 @@ autostart can be configured by creating a user unit whose `ExecStart` points
 to the absolute path of the AppImage. The bundled service template remains
 available for normal source/package installations.
 
-### Known limitations
+### Compatibility
 
-- Builds are currently x86_64-only and should be built on a Linux distribution
-  no newer than the oldest distribution intended to run the AppImage.
+- The published GitHub Actions AppImage is x86_64 and built on Ubuntu 22.04,
+  with glibc 2.35. It therefore targets Linux systems with glibc 2.35 or
+  newer; building on Ubuntu 24.04 or another newer distribution can make the
+  AppImage require a newer glibc than intended.
 - GTK and libadwaita are bundled, but graphics drivers, a desktop session,
   Discord IPC, Steam, and the game remain host-provided dependencies.
 - A system with FUSE unavailable can usually run the file with
