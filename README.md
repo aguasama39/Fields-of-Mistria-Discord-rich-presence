@@ -77,6 +77,33 @@ cp data/io.github.mistriapresence.App.desktop ~/.local/share/applications/
 
 Distribution packages should place the executable on `PATH`, the desktop file in `/usr/share/applications/`, the metainfo file in `/usr/share/metainfo/`, and the service template in `/usr/lib/systemd/user/`. No Windows or macOS packaging is provided.
 
+### Arch Linux and AUR
+
+The recommended Arch package is the separate binary recipe in `aur-bin/PKGBUILD`. It downloads the published x86_64 AppImage from GitHub release `v0.1.1`, verifies its SHA-256 checksum with `makepkg`, and does not compile Python or build from source:
+
+```sh
+cd aur-bin
+makepkg -si
+```
+
+The release asset is named `mistria-presence-0.1.0-x86_64.AppImage`; its checksum is recorded in `aur-bin/PKGBUILD`. The package installs a launcher at `/usr/bin/mistria-presence`, desktop integration files, the icon, and a **user** systemd unit. The original source-build recipe remains available in `aur/PKGBUILD`:
+
+```sh
+cd aur
+makepkg -si
+```
+
+The binary package depends on `fuse2` for normal AppImage mounting. Discord IPC is provided by a running Discord desktop client, which is listed as an optional dependency; the application talks to its local Unix socket directly.
+
+The package installs a **user** systemd unit but never enables services during installation. Enable it for your user after installing if you want background startup:
+
+```sh
+systemctl --user daemon-reload
+systemctl --user enable --now mistria-presence.service
+```
+
+To refresh AUR metadata after changing either recipe, run `makepkg --printsrcinfo > .SRCINFO` from that recipe's directory. Do not run `systemctl` with `sudo`; the unit belongs to the graphical user session.
+
 ## AppImage
 
 The repository includes a self-contained x86_64 AppImage build. It uses the

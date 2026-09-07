@@ -1,0 +1,19 @@
+pkgbase = mistria-presence
+	pkgdesc = Linux GTK4 Discord Rich Presence client for Fields of Mistria
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence
+	arch = any
+	license = GPL-3.0-or-later
+	checkdepends = python-pytest
+	depends = python>=3.10
+	depends = gtk4
+	depends = libadwaita
+	depends = python-gobject
+	makedepends = python-build
+	makedepends = python-setuptools
+	optdepends = discord: official Discord desktop client providing the local IPC socket
+	source = mistria-presence-0.1.0::https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence/archive/f54ff72a2580f0e84e554dce2d82e5be995a4f18.tar.gz
+	sha256sums = 2f7d4690b16f7f41da25b2ba3fbe5c55a8792a547882310c82c72d44450adae2
+
+pkgname = mistria-presence

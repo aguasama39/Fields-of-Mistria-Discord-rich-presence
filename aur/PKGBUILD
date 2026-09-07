@@ -1,0 +1,57 @@
+# Maintainer: Fields of Mistria Presence contributors
+pkgname=mistria-presence
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Linux GTK4 Discord Rich Presence client for Fields of Mistria'
+arch=('any')
+url='https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence'
+license=('GPL-3.0-or-later')
+depends=('python>=3.10' 'gtk4' 'libadwaita' 'python-gobject')
+makedepends=('python-build' 'python-setuptools')
+checkdepends=('python-pytest')
+optdepends=('discord: official Discord desktop client providing the local IPC socket')
+_commit='f54ff72a2580f0e84e554dce2d82e5be995a4f18'
+source=("${pkgname}-${pkgver}::https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence/archive/${_commit}.tar.gz")
+sha256sums=('2f7d4690b16f7f41da25b2ba3fbe5c55a8792a547882310c82c72d44450adae2')
+
+_srcdir="Fields-of-Mistria-Discord-rich-presence-${_commit}"
+
+prepare() {
+    cd "${srcdir}/${_srcdir}"
+    python -m compileall -q src
+}
+
+build() {
+    cd "${srcdir}/${_srcdir}"
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "${srcdir}/${_srcdir}"
+    pytest -q
+}
+
+package() {
+    cd "${srcdir}/${_srcdir}"
+
+    install -dm755 "${pkgdir}/usr/lib/${pkgname}"
+    cp -a src/mistria_presence "${pkgdir}/usr/lib/${pkgname}/"
+
+    install -Dm755 /dev/stdin "${pkgdir}/usr/bin/${pkgname}" <<'EOF'
+#!/bin/sh
+set -eu
+export PYTHONPATH=/usr/lib/mistria-presence
+exec /usr/bin/python -m mistria_presence "$@"
+EOF
+
+    install -Dm644 data/io.github.mistriapresence.App.desktop \
+        "${pkgdir}/usr/share/applications/io.github.mistriapresence.App.desktop"
+    install -Dm644 data/io.github.mistriapresence.App.metainfo.xml \
+        "${pkgdir}/usr/share/metainfo/io.github.mistriapresence.App.metainfo.xml"
+    for size in 16 32 48 64 128 256; do
+        install -Dm644 "data/icons/hicolor/${size}x${size}/apps/io.github.mistriapresence.App.png" \
+            "${pkgdir}/usr/share/icons/hicolor/${size}x${size}/apps/io.github.mistriapresence.App.png"
+    done
+    install -Dm644 data/mistria-presence.service \
+        "${pkgdir}/usr/lib/systemd/user/mistria-presence.service"
+}

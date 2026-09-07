@@ -1,0 +1,33 @@
+# Maintainer: Fields of Mistria Presence contributors
+pkgname=mistria-presence-bin
+pkgver=0.1.1
+pkgrel=1
+pkgdesc='Linux GTK4 Discord Rich Presence client for Fields of Mistria (prebuilt AppImage)'
+arch=('x86_64')
+url='https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence'
+license=('GPL-3.0-or-later')
+options=('!strip')
+depends=('fuse2')
+optdepends=('discord: official Discord desktop client providing the local IPC socket')
+provides=('mistria-presence')
+conflicts=('mistria-presence')
+_appimage='mistria-presence-0.1.0-x86_64.AppImage'
+source=("${_appimage}::https://github.com/aguasama39/Fields-of-Mistria-Discord-rich-presence/releases/download/v0.1.1/mistria-presence-0.1.0-x86_64.AppImage")
+sha256sums=('0010461dd73b1cdfce3a771c6636b1ef4fd76dacd99dc2e6db444aaf79e6abaf')
+
+package() {
+    install -Dm755 "${srcdir}/${_appimage}" \
+        "${pkgdir}/opt/mistria-presence/${_appimage}"
+    install -Dm755 "${startdir}/mistria-presence" \
+        "${pkgdir}/usr/bin/mistria-presence"
+    install -Dm644 "${startdir}/io.github.mistriapresence.App.desktop" \
+        "${pkgdir}/usr/share/applications/io.github.mistriapresence.App.desktop"
+    install -Dm644 "${startdir}/io.github.mistriapresence.App.metainfo.xml" \
+        "${pkgdir}/usr/share/metainfo/io.github.mistriapresence.App.metainfo.xml"
+    for size in 16 32 48 64 128 256; do
+        install -Dm644 "${startdir}/icons/hicolor/${size}x${size}/apps/io.github.mistriapresence.App.png" \
+            "${pkgdir}/usr/share/icons/hicolor/${size}x${size}/apps/io.github.mistriapresence.App.png"
+    done
+    install -Dm644 "${startdir}/mistria-presence.service" \
+        "${pkgdir}/usr/lib/systemd/user/mistria-presence.service"
+}

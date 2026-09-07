@@ -46,13 +46,13 @@ APPIMAGETOOL=$(download_tool appimagetool-x86_64 "https://github.com/AppImage/ap
 rm -rf "$BUILD_DIR/AppDir"
 APPDIR="$BUILD_DIR/AppDir"
 mkdir -p "$APPDIR/usr/bin" "$APPDIR/usr/lib/python3/site-packages" "$APPDIR/usr/share/applications" \
-    "$APPDIR/usr/share/metainfo" "$APPDIR/usr/share/icons/hicolor/scalable/apps" "$APPDIR/usr/lib/girepository-1.0"
+    "$APPDIR/usr/share/metainfo" "$APPDIR/usr/share/icons/hicolor" "$APPDIR/usr/lib/girepository-1.0"
 
 cp "$ROOT/packaging/AppRun" "$APPDIR/AppRun"
 cp "$ROOT/packaging/mistria-presence" "$APPDIR/usr/bin/mistria-presence"
 cp "$ROOT/data/io.github.mistriapresence.App.desktop" "$APPDIR/usr/share/applications/"
 cp "$ROOT/data/io.github.mistriapresence.App.metainfo.xml" "$APPDIR/usr/share/metainfo/"
-cp "$ROOT/data/io.github.mistriapresence.App.svg" "$APPDIR/usr/share/icons/hicolor/scalable/apps/"
+cp -a "$ROOT/data/icons/hicolor/." "$APPDIR/usr/share/icons/hicolor/"
 cp -a "$ROOT/src/mistria_presence" "$APPDIR/usr/lib/python3/site-packages/"
 chmod +x "$APPDIR/AppRun" "$APPDIR/usr/bin/mistria-presence"
 
