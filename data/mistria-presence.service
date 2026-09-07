@@ -1,0 +1,13 @@
+[Unit]
+Description=Fields of Mistria Discord Rich Presence
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=mistria-presence
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

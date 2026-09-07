@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.mistriapresence.App</id>
+  <name>Mistria Presence</name>
+  <summary>Discord Rich Presence for Fields of Mistria</summary>
+  <description><p>A Linux-native background Discord Rich Presence client for the Steam version of Fields of Mistria.</p></description>
+  <launchable type="desktop-id">io.github.mistriapresence.App.desktop</launchable>
+  <provides><binary>mistria-presence</binary></provides>
+  <content_rating type="oars-1.1"/>
+  <releases><release version="0.1.0" date="2026-09-07"/></releases>
+</component>

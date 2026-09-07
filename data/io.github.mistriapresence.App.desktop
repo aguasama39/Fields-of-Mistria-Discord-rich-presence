@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mistria Presence
+Comment=Fields of Mistria Discord Rich Presence
+Exec=mistria-presence
+Icon=io.github.mistriapresence.App
+Terminal=false
+Type=Application
+Categories=Game;Utility;
+Keywords=Discord;Steam;Presence;
