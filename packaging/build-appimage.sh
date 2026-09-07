@@ -56,16 +56,22 @@ cp -a "$ROOT/data/icons/hicolor/." "$APPDIR/usr/share/icons/hicolor/"
 cp -a "$ROOT/src/mistria_presence" "$APPDIR/usr/lib/python3/site-packages/"
 chmod +x "$APPDIR/AppRun" "$APPDIR/usr/bin/mistria-presence"
 
-# Copy the exact Python installation used for the build. linuxdeploy then finds
-# its ELF dependencies, while the wrapper makes the interpreter relocatable.
+# Copy only the interpreter and standard library. Do not copy the host's whole
+# prefix: Debian site-packages can contain extensions for a different Python
+# build and would make startup depend on the build machine.
 PYTHON_BIN=$(command -v python3)
-PYTHON_PREFIX=$(python3 -c 'import sys; print(sys.prefix)')
 PYTHON_VERSION=$(python3 -c 'import sys; print(f"python{sys.version_info.major}.{sys.version_info.minor}")')
+PYTHON_STDLIB=$(python3 -c 'import sysconfig; print(sysconfig.get_path("stdlib"))')
+case "$PYTHON_STDLIB" in
+    /usr/lib/$PYTHON_VERSION) ;;
+    *) die "expected a system Python standard library under /usr/lib/$PYTHON_VERSION (got $PYTHON_STDLIB)" ;;
+esac
 cp "$PYTHON_BIN" "$APPDIR/usr/bin/python3"
-cp -a "$PYTHON_PREFIX/lib/$PYTHON_VERSION" "$APPDIR/usr/lib/"
+mkdir -p "$APPDIR/usr/lib/$PYTHON_VERSION"
+cp -a "$PYTHON_STDLIB/." "$APPDIR/usr/lib/$PYTHON_VERSION/"
 
 GI_DIR=$(python3 -c 'import gi, pathlib; print(pathlib.Path(gi.__file__).parent)')
-cp -a "$GI_DIR" "$APPDIR/usr/lib/python3/dist-packages"
+cp -a "$GI_DIR" "$APPDIR/usr/lib/python3/site-packages/"
 
 for typelib_dir in /usr/lib/*/girepository-1.0 /usr/lib/girepository-1.0; do
     if [ -d "$typelib_dir" ]; then

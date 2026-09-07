@@ -23,6 +23,8 @@ jobs:
         run: python3 -m pip install --user 'pytest>=8' && PYTHONPATH=src pytest
       - name: Build AppImage
         run: ./packaging/build-appimage.sh
+      - name: Smoke-test bundled Python runtime
+        run: ./packaging/test-appimage-runtime.sh dist/*.AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
         with:

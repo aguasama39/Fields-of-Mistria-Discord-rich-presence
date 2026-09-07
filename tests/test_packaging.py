@@ -61,3 +61,18 @@ def test_binary_arch_package_installs_runtime_integration() -> None:
     launcher = (package_dir / "mistria-presence").read_text(encoding="utf-8")
     assert "exec /opt/mistria-presence/mistria-presence-0.1.0-x86_64.AppImage \"$@\"" in launcher
     assert "systemctl enable" not in pkgbuild
+
+
+def test_appimage_uses_an_isolated_python_runtime() -> None:
+    builder = (ROOT / "packaging/build-appimage.sh").read_text(encoding="utf-8")
+    launcher = (ROOT / "packaging/mistria-presence").read_text(encoding="utf-8")
+    smoke_test = (ROOT / "packaging/test-appimage-runtime.sh").read_text(encoding="utf-8")
+
+    assert 'PYTHON_STDLIB=$(python3 -c' in builder
+    assert 'cp -a "$PYTHON_STDLIB/."' in builder
+    assert 'PYTHON_PREFIX' not in builder
+    assert 'dist-packages' not in builder
+    assert 'PYTHONNOUSERSITE=1' in launcher
+    assert 'exec "$PYTHON" -S -m mistria_presence' in launcher
+    assert 'import threading, functools, types' in smoke_test
+    assert 'gi.require_version("Gtk", "4.0")' in smoke_test

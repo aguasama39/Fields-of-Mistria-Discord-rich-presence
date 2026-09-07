@@ -108,10 +108,12 @@ To refresh AUR metadata after changing either recipe, run `makepkg --printsrcinf
 
 The repository includes a self-contained x86_64 AppImage build. It uses the
 system GTK/libadwaita development files only while building, bundles the
-Ubuntu 22.04 Python 3.10 interpreter and matching PyGObject bindings, GTK
-libraries, typelibs, application launcher, existing desktop metadata, and
-icon, and downloads its build tools into the repository cache rather than
-installing them system-wide.
+Ubuntu 22.04 Python interpreter's standard library and matching PyGObject
+bindings, GTK libraries, typelibs, application launcher, existing desktop
+metadata, and icon, and downloads its build tools into the repository cache
+rather than installing them system-wide. The bundled launcher disables Python
+site discovery and supplies an AppImage-local `PYTHONPATH`; host Python
+packages are not used.
 
 ### Build prerequisites
 
@@ -132,6 +134,10 @@ cache outside the checkout if desired.
 ./packaging/build-appimage.sh
 ./dist/mistria-presence-0.1.0-x86_64.AppImage
 ```
+
+The build runs `packaging/test-appimage-runtime.sh` in CI. It extracts the
+image and imports the Python stdlib plus GTK4/libadwaita before any display is
+started, catching broken bundled-interpreter startup early.
 
 The versioned file is written to `dist/`, which is ignored by Git. It can be
 moved anywhere and does not need installation or execute permissions beyond
