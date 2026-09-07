@@ -69,9 +69,16 @@ esac
 cp "$PYTHON_BIN" "$APPDIR/usr/bin/python3"
 mkdir -p "$APPDIR/usr/lib/$PYTHON_VERSION"
 cp -a "$PYTHON_STDLIB/." "$APPDIR/usr/lib/$PYTHON_VERSION/"
+# Arch includes host packages beneath the stdlib directory; keep them out of
+# the image so linuxdeploy only sees the intentionally bundled dependencies.
+rm -rf "$APPDIR/usr/lib/$PYTHON_VERSION/site-packages"
+rm -rf "$APPDIR/usr/lib/$PYTHON_VERSION/config-*" \
+    "$APPDIR/usr/lib/$PYTHON_VERSION/lib-dynload/_test"*.so \
+    "$APPDIR/usr/lib/$PYTHON_VERSION/lib-dynload/_tkinter"*.so
 
 GI_DIR=$(python3 -c 'import gi, pathlib; print(pathlib.Path(gi.__file__).parent)')
-cp -a "$GI_DIR" "$APPDIR/usr/lib/python3/site-packages/"
+mkdir -p "$APPDIR/usr/lib/python3/site-packages/gi"
+cp -a "$GI_DIR/." "$APPDIR/usr/lib/python3/site-packages/gi/"
 
 for typelib_dir in /usr/lib/*/girepository-1.0 /usr/lib/girepository-1.0; do
     if [ -d "$typelib_dir" ]; then

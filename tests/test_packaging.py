@@ -70,9 +70,13 @@ def test_appimage_uses_an_isolated_python_runtime() -> None:
 
     assert 'PYTHON_STDLIB=$(python3 -c' in builder
     assert 'cp -a "$PYTHON_STDLIB/."' in builder
+    assert 'rm -rf "$APPDIR/usr/lib/$PYTHON_VERSION/site-packages"' in builder
+    assert 'lib-dynload/_tkinter' in builder
     assert 'PYTHON_PREFIX' not in builder
     assert 'dist-packages' not in builder
     assert 'PYTHONNOUSERSITE=1' in launcher
     assert 'exec "$PYTHON" -S -m mistria_presence' in launcher
+    assert 'mkdir -p "$APPDIR/usr/lib/python3/site-packages/gi"' in builder
+    assert 'cp -a "$GI_DIR/." "$APPDIR/usr/lib/python3/site-packages/gi/"' in builder
     assert 'import threading, functools, types' in smoke_test
     assert 'gi.require_version("Gtk", "4.0")' in smoke_test
